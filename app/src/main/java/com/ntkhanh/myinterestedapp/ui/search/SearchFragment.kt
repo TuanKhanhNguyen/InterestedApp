@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingComponent
+import androidx.databinding.DataBindingUtil
 
 import com.ntkhanh.myinterestedapp.R
 import com.ntkhanh.myinterestedapp.binding.FragmentDataBindingComponent
@@ -27,7 +28,8 @@ class SearchFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_search, container, false)
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false, mDataBindingComponent)
+        return mBinding.root
     }
 
 

@@ -10,7 +10,6 @@ import javax.inject.Inject
  * Binding adapters that work with a fragment instance.
  */
 
-
 class FragmentBindingAdapters @Inject constructor(private val fragment: Fragment) {
     @BindingAdapter("imageUrl")
     fun bindImage(imageView: ImageView, url: String?) {
