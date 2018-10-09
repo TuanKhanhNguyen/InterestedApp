@@ -23,6 +23,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    dataBinding {
+        enabled = true
+    }
 }
 
 dependencies {
@@ -32,7 +36,6 @@ dependencies {
     implementation deps.navigation.fragment_ktx
     implementation deps.navigation.fragment
 
-
     // Timber log
     implementation deps.timber
 
@@ -41,8 +44,10 @@ dependencies {
     implementation deps.dagger.android
     implementation deps.dagger.android_support
 
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0-beta01'
     kapt deps.dagger.android_support_compiler
     kapt deps.dagger.compiler
+    implementation deps.glide.runtime
 
     // TODO: Update later
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
