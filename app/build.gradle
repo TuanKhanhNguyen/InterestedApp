@@ -32,9 +32,13 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation deps.kotlin.stdlib
-    implementation deps.support.androidx_app_compat
+
     implementation deps.navigation.fragment_ktx
     implementation deps.navigation.fragment
+
+
+    implementation deps.support.androidx_app_compat
+    implementation deps.support.design
 
     // Timber log
     implementation deps.timber
@@ -48,6 +52,13 @@ dependencies {
     kapt deps.dagger.android_support_compiler
     kapt deps.dagger.compiler
     implementation deps.glide.runtime
+
+    implementation deps.retrofit.runtime
+    implementation deps.retrofit.gson
+    implementation deps.retrofit.login_interceptor
+
+    implementation deps.room.runtime
+
 
     // TODO: Update later
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
