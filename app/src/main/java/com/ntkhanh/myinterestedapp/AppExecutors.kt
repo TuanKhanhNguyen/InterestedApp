@@ -15,7 +15,18 @@ import javax.inject.Singleton
  */
 
 @Singleton
-open class AppExcutors(private val mDiskIO: Executor, private val mNetworkIO: Executor, private val mMainThread: Executor) {
+open class AppExecutors(private val mDiskIO: Executor, private val mNetworkIO: Executor, private val mMainThread: Executor) {
+    fun diskIO(): Executor {
+        return mDiskIO
+    }
+
+    fun networkIO(): Executor {
+        return mNetworkIO
+    }
+
+    fun mainThread(): Executor {
+        return mMainThread
+    }
 
     @Inject
     constructor() : this(

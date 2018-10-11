@@ -1,43 +1,61 @@
 package com.ntkhanh.myinterestedapp.api
 
+import android.text.TextUtils
+import com.google.gson.GsonBuilder
+import com.ntkhanh.myinterestedapp.util.GsonUTCDateAdapter
+import com.ntkhanh.myinterestedapp.util.LiveDataCallAdapterFactory
+import com.ntkhanh.myinterestedapp.util.SerializationExclusionStrategy
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.*
 
 object ServiceGenerator {
 
-    private var mApiBaseUrl = "https://api.github.com/"
-    private var builder = Retrofit.Builder() //create retrofit builder
+    private var mApiBaseUrl: String? = null
+    private var mRetrofitBuilder = Retrofit.Builder() //create mRetrofit mRetrofitBuilder
             .baseUrl(mApiBaseUrl)
-            .addConverterFactory(GsonConverterFactory.create()) // add a converter: need Json to convert between data obj and Json
+            .addCallAdapterFactory(LiveDataCallAdapterFactory())
+            .addConverterFactory(GsonConverterFactory.create(
+                    GsonBuilder()
+                            .addSerializationExclusionStrategy(SerializationExclusionStrategy())
+                            .registerTypeAdapter(Date::class.java, GsonUTCDateAdapter())
+                            .create()
+            )) // add a converter: need Json to convert between data obj and Json
 
-    // Create retrofit object
-    private var retrofit = builder.build()
 
-    private val httpClientBuilder = OkHttpClient.Builder()
+    // Create mRetrofit object
+    private var mRetrofit: Retrofit? = null// = mRetrofitBuilder.build()
 
     // For login we need an OK http interceptor
-    private val httpInterceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+    private val mLoggingHttpInterceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
 
-    private fun changeApiBaseUrl(newApiBaseUrl: String) {
-        mApiBaseUrl = newApiBaseUrl
-        builder = Retrofit.Builder()
-                .baseUrl(mApiBaseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-    }
-    
-    fun <S> createService(serviceClass: Class<S>): S {
+    private val mHttpClientBuilder = OkHttpClient.Builder()
 
-        if (!httpClientBuilder.interceptors().contains(httpInterceptor)) {
-            httpClientBuilder.addInterceptor(httpInterceptor)
-            // customize it with a custom OkHttp
-            builder = builder.client(httpClientBuilder.build())
-            // create retrofit instance from the builder
-            retrofit = builder.build()
+    fun setApiBaseUrl(newApiBaseUrl: String) {
+        if (!TextUtils.equals(mApiBaseUrl, newApiBaseUrl)) {
+            mApiBaseUrl = newApiBaseUrl
+            mRetrofitBuilder.baseUrl(mApiBaseUrl)
+            mRetrofit = mRetrofitBuilder.build()
         }
+    }
 
-        return retrofit.create(serviceClass)
+    fun setIntercepter(interceptor: Interceptor?) {
+        mHttpClientBuilder.interceptors().clear()
+        mHttpClientBuilder.addInterceptor(mLoggingHttpInterceptor)
+        interceptor?.let {
+            if (!mHttpClientBuilder.interceptors().contains(mLoggingHttpInterceptor)) {
+                mHttpClientBuilder.addInterceptor(interceptor)
+            }
+        }
+        mRetrofitBuilder.client(mHttpClientBuilder.build())
+        mRetrofit = mRetrofitBuilder.build()
+    }
+
+    fun <S> createService(serviceClass: Class<S>): S {
+        return mRetrofit!!.create(serviceClass)
     }
 
 }
